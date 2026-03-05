@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include "ability.hpp"
 
 class Personnage {
 public:
@@ -14,6 +15,7 @@ private :
 	std::string prenom;
 	int vie;
 	int mana;
+	ability bf;
 };
 
 

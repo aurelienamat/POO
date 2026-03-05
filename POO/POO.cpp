@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "Personnage.hpp"
+#include "ability.hpp"
 
 using namespace std;
 
