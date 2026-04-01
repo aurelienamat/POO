@@ -2,6 +2,7 @@
 //
 #include <iostream>
 #include <string>
+#include <vector>
 #include "Personnage.hpp"
 #include "ability.hpp"
 
@@ -9,13 +10,46 @@ using namespace std;
 
 int main()
 {
+    //Création des personnages
+    Personnage goliath("goliath"),david("david");
+
+    //Création des ability
+    vector<ability*> listeAbility;
+    new ability("soinI", -10, 10, listeAbility);
+
     string choixPrenom;
     std::cout << "Votre nom : ";
     cin >> choixPrenom;
 
     Personnage aure(choixPrenom);
+    std::cout << "Votre perso a ete cree, voici ses infos : " << endl;
+    aure.afficher();
+
+    //Crée une ability
+    string choixNomAbility;
+    std::cout << "Entrez le nom de l'abilite que vous voulez creer : ";
+    cin >> choixNomAbility;
+    new ability(choixNomAbility, 10, 10, listeAbility);
+    std::cout << "Abilite cree" << endl;
+
+    //Lister les ability
+    std::cout << "Voici toutes les ability : " << endl;
+    for (int i = 0; i < listeAbility.size(); i++) {
+        std::cout << i + 1 << ". ";
+        listeAbility[i]->afficher();
+        std::cout << endl;
+    }
+
+
+    int choixAbility;
+    std::cout << "Numero de l'ability que vous souhaitez ajouter à votre inventaire : ";
+    cin >> choixAbility;
+
+    aure.addAbility(*listeAbility[choixAbility - 1]);
 
     aure.afficher();
+
+
 }
 
 // Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage
