@@ -8,6 +8,70 @@
 
 using namespace std;
 
+
+Personnage findPerso(string choixPrenom) {
+    for (int i = 0; i < Personnage::nbPerso(); i++) {
+        if (Personnage::returnPersonnage(i).getPrenom() == choixPrenom) {
+            return Personnage::returnPersonnage(i);
+        }
+    }
+    //Retourne le premier perso de la liste tant pis
+    return Personnage::returnPersonnage(0);
+}
+
+//Fonction qui vérifie si il est toujours en vie
+bool InLive(vector<Personnage> PersonnageArene) {
+    for (int i = 0; i < PersonnageArene.size(); i++) {
+        if (PersonnageArene[i].getVie() <= 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+//Fonction de combat
+void combat(vector<Personnage> PersonnageArene, string choixPrenom) {
+    Personnage aure = findPerso(choixPrenom);
+    //Rejoint l'arène
+    //Plus tard un aura une fonctione pour savoir qui va rejoindre l'arène
+    for (int i = 0; i < Personnage::nbPerso(); i++) {
+        PersonnageArene.push_back(Personnage::returnPersonnage(i));
+        std::cout << PersonnageArene[i].getPrenom() << " a rejoint l'arene" << endl;
+    }
+    while (InLive(PersonnageArene) == 0)
+    {
+        cout << "Qui veux tu attaquer (1,2...): " << endl;
+        for (int i = 0; i < PersonnageArene.size(); i++) {
+            if (PersonnageArene[i].getPrenom() != choixPrenom) {
+                std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
+            }
+        }
+
+        int choixPersoAttaque;
+        do {
+            cin >> choixPersoAttaque;
+        } while (choixPersoAttaque > PersonnageArene.size() || choixPersoAttaque < 1);
+        aure.afficherAbility();
+        cout << "Avec quelle ability :  ";
+        int choixAttaque;
+        do {
+            cin >> choixAttaque;
+        } while (choixAttaque > aure.getNbAbility() || choixAttaque < 0);
+
+        PersonnageArene[choixPersoAttaque - 1].degat(aure.returnAbility(choixAttaque - 1).getDegat());
+
+        for (int i = 0; i < PersonnageArene.size(); i++) {
+            std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
+        }
+    }
+    cout << endl <<"Fin du combat ! Voici les derniers en vie " << endl;
+    for (int i = 0; i < PersonnageArene.size(); i++) {
+        if (PersonnageArene[i].getVie() > 0) {
+            std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
+        }
+    }
+}
+
 int main()
 {
     //Création des personnages
@@ -15,7 +79,8 @@ int main()
 
     //Création des ability
     vector<ability*> listeAbility;
-    new ability("soinI", -10, 10, listeAbility);
+    new ability("soinI", -10, 10);
+    new ability("Morsure", 15, 0);
 
     string choixPrenom;
     std::cout << "Votre nom : ";
@@ -24,41 +89,63 @@ int main()
     Personnage aure(choixPrenom);
     std::cout << "Votre perso a ete cree, voici ses infos : " << endl;
     aure.afficher();
+    aure.afficherAbility();
 
-    //Crée une ability
-    string choixNomAbility;
-    std::cout << "Entrez le nom de l'abilite que vous voulez creer : ";
-    cin >> choixNomAbility;
-    new ability(choixNomAbility, 10, 10, listeAbility);
-    std::cout << "Abilite cree" << endl;
+    getchar();
+    getchar();
 
-    //Lister les ability
+    //Choisie une ability
     std::cout << "Voici toutes les ability : " << endl;
-    for (int i = 0; i < listeAbility.size(); i++) {
-        std::cout << i + 1 << ". ";
-        listeAbility[i]->afficher();
-        std::cout << endl;
-    }
+    ability::afficherListeAbility();
+    int choixNomAbility;
+    std::cout << "Entrez le nom de l'abilite que vous voulez choisir : " ;
+    do {
+        cin >> choixNomAbility;
+    } while (choixNomAbility > ability::getListeAbility().size() || choixNomAbility < 1);
 
+    aure.addAbility(ability::returnAbility(choixNomAbility-1));
 
-    int choixAbility;
-    std::cout << "Numero de l'ability que vous souhaitez ajouter à votre inventaire : ";
-    cin >> choixAbility;
+    aure.afficherAbility();
 
-    aure.addAbility(*listeAbility[choixAbility - 1]);
+    //Debut du combat
+    std::cout << "Debut du combat, etes vous pret ? " << endl;
 
-    aure.afficher();
+    getchar();
+    getchar();
+    
+    vector<Personnage> PersonnageArene;
 
+    combat(PersonnageArene, choixPrenom);
+    //Ajout de tous les personnage dans l'arene
+    //for (int i = 0; i < Personnage::nbPerso(); i++) {
+    //    PersonnageArene.push_back(Personnage::returnPersonnage(i));
+    //    std::cout << PersonnageArene[i].getPrenom() << " a rejoint l'arene" << endl;
+    //}
 
+    ////combat
+    ////Possibilité d'ajouter une fonction qui retourne 1 
+    ////Quand la vie d'un des mec de l'arene est a 0
+    ////Comme ça combat jusqu'a la mort
+    //// Et pas obliger de faire chaque ligne ou d'avoir un nombre de tour definie
+    //
+    ////et une fonction combat ?
+    //
+    //cout << " Tu commences, qui veux tu attaquer (1,2...): " << endl;
+    //for (int i = 0; i < PersonnageArene.size(); i++) {
+    //    if (PersonnageArene[i].getPrenom() != choixPrenom) {
+    //        std::cout << i +1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
+    //    }
+    //}
+    //int choixPersoAttaque;
+    //cin >> choixPersoAttaque;
+    //aure.afficherAbility();
+    //cout << "Avec quelle ability :  ";
+    //int choixAttaque;
+    //cin >> choixAttaque;
+
+    //PersonnageArene[choixPersoAttaque-1].degat(aure.returnAbility(choixAttaque - 1).getDegat());
+
+    //for (int i = 0; i < PersonnageArene.size(); i++) {
+    //    std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
+    //}
 }
-
-// Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage
-// Déboguer le programme : F5 ou menu Déboguer > Démarrer le débogage
-
-// Astuces pour bien démarrer : 
-//   1. Utilisez la fenêtre Explorateur de solutions pour ajouter des fichiers et les gérer.
-//   2. Utilisez la fenêtre Team Explorer pour vous connecter au contrôle de code source.
-//   3. Utilisez la fenêtre Sortie pour voir la sortie de la génération et d'autres messages.
-//   4. Utilisez la fenêtre Liste d'erreurs pour voir les erreurs.
-//   5. Accédez à Projet > Ajouter un nouvel élément pour créer des fichiers de code, ou à Projet > Ajouter un élément existant pour ajouter des fichiers de code existants au projet.
-//   6. Pour rouvrir ce projet plus tard, accédez à Fichier > Ouvrir > Projet et sélectionnez le fichier .sln.
