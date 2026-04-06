@@ -3,11 +3,33 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 #include "Personnage.hpp"
 #include "ability.hpp"
 
 using namespace std;
 
+
+void tourAutre(vector<Personnage> PersonnageArene, string choixPrenom) {
+    Personnage WhoAttack;
+    do {
+        WhoAttack = PersonnageArene[rand() % PersonnageArene.size()];
+    } while (WhoAttack.getPrenom() == choixPrenom);
+
+    cout << "Au tour de " << WhoAttack.getPrenom();
+
+    //Qui il attaque ?
+    Personnage WhoToAttack;
+    do {
+        WhoToAttack = PersonnageArene[rand() % PersonnageArene.size()];
+    } while (WhoToAttack.getPrenom() == WhoAttack.getPrenom());
+
+    cout << " d'attaquer " << WhoToAttack.getPrenom() << endl;
+
+    //Avec quelle arme ?
+    WhoToAttack.degat(WhoAttack.returnAbility(rand() % WhoAttack.getNbAbility()).getDegat());
+}
 
 Personnage findPerso(string choixPrenom) {
     for (int i = 0; i < Personnage::nbPerso(); i++) {
@@ -60,9 +82,14 @@ void combat(vector<Personnage> PersonnageArene, string choixPrenom) {
 
         PersonnageArene[choixPersoAttaque - 1].degat(aure.returnAbility(choixAttaque - 1).getDegat());
 
-        for (int i = 0; i < PersonnageArene.size(); i++) {
+        /*for (int i = 0; i < PersonnageArene.size(); i++) {
             std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
-        }
+        }*/
+
+        //Au tour des autres
+        //Qui va jouer ?
+        tourAutre(PersonnageArene, choixPrenom);
+
     }
     cout << endl <<"Fin du combat ! Voici les derniers en vie " << endl;
     for (int i = 0; i < PersonnageArene.size(); i++) {
@@ -74,6 +101,7 @@ void combat(vector<Personnage> PersonnageArene, string choixPrenom) {
 
 int main()
 {
+    srand(time(0));
     //Création des personnages
     Personnage goliath("goliath"),david("david");
 
