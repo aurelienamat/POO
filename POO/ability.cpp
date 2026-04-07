@@ -7,12 +7,7 @@ using namespace std;
 
 vector<ability*> ability::ListeAbilityStatic;
 
-ability::ability() : degat(10), cou(20),nom("Boule de feu") {
-	for (int i = 0; i < ListeAbilityStatic.size(); i++) {
-		if (ListeAbilityStatic[i]->nom == "Boule de feu") {
-			return;
-		}
-	}
+ability::ability(){
 	ListeAbilityStatic.push_back(this);
 }
 

@@ -12,8 +12,13 @@ Personnage::Personnage() :vie(100), mana(50){
 }
 
 Personnage::Personnage(string choixPrenom):vie(100),mana(50),prenom(choixPrenom){
-	ability* bf = new ability();
-	this->addAbility(bf);
+	//ability* bf = new ability();
+	vector<ability*> liste = ability::getListeAbility();
+	for (int i = 0; i < liste.size(); i++) {
+		if (liste[i]->getNom() == "Boule de feu") {
+			this->addAbility(liste[i]);
+		}
+	}
 
 	ListePersonnageStatic.push_back(this);
 }

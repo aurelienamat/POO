@@ -11,13 +11,21 @@
 using namespace std;
 
 
+void deleteNew() {
+    vector<ability*> Liste = ability::getListeAbility();
+
+    for (int i = 0; i < Liste.size(); i++) {
+        delete Liste[i];
+    }
+}
+
 void tourAutre(vector<Personnage>& PersonnageArene, string choixPrenom) {
     Personnage WhoAttack;
     do {
         WhoAttack = PersonnageArene[rand() % PersonnageArene.size()];
     } while (WhoAttack.getPrenom() == choixPrenom);
 
-    cout << "Au tour de " << WhoAttack.getPrenom();
+    cout << endl << "Au tour de " << WhoAttack.getPrenom();
 
     //Qui il attaque ?
     Personnage WhoToAttack;
@@ -29,6 +37,7 @@ void tourAutre(vector<Personnage>& PersonnageArene, string choixPrenom) {
 
     //Avec quelle arme ?
     WhoToAttack.degat(WhoAttack.returnAbility(rand() % WhoAttack.getNbAbility())->getDegat());
+    cout << endl;
 }
 
 Personnage* findPerso(string choixPrenom) {
@@ -62,7 +71,7 @@ void combat(vector<Personnage>& PersonnageArene, string choixPrenom) {
     }
     while (InLive(PersonnageArene) == 0)
     {
-        cout << "Qui veux tu attaquer (1,2...): " << endl;
+        cout << endl << "Qui veux tu attaquer (1,2...): " << endl;
         for (int i = 0; i < PersonnageArene.size(); i++) {
             if (PersonnageArene[i].getPrenom() != choixPrenom) {
                 std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
@@ -102,13 +111,15 @@ void combat(vector<Personnage>& PersonnageArene, string choixPrenom) {
 int main()
 {
     srand(time(0));
-    //Création des personnages
-    Personnage goliath("goliath"),david("david");
-
+    
     //Création des ability
     vector<ability*> listeAbility;
     new ability("soinI", -10, 10);
     new ability("Morsure", 15, 0);
+    new ability("Boule de feu", 10, 20);
+
+    //Création des personnages
+    Personnage goliath("goliath"), david("david");
 
     string choixPrenom;
     std::cout << "Votre nom : ";
@@ -126,7 +137,7 @@ int main()
     std::cout << "Voici toutes les ability : " << endl;
     ability::afficherListeAbility();
     int choixNomAbility;
-    std::cout << "Entrez le nom de l'abilite que vous voulez choisir : " ;
+    std::cout << "Entrez le numero de l'abilite que vous voulez choisir : " ;
     do {
         cin >> choixNomAbility;
     } while (choixNomAbility > ability::getListeAbility().size() || choixNomAbility < 1);
@@ -144,6 +155,8 @@ int main()
     vector<Personnage> PersonnageArene;
 
     combat(PersonnageArene, choixPrenom);
+
+    deleteNew();
     //Ajout de tous les personnage dans l'arene
     //for (int i = 0; i < Personnage::nbPerso(); i++) {
     //    PersonnageArene.push_back(Personnage::returnPersonnage(i));
