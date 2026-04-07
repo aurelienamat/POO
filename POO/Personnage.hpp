@@ -12,21 +12,21 @@ public:
 	Personnage(std::string choixPrenom);
 	void afficher();
 	void afficherAbility();
-	void addAbility(ability name);
+	void addAbility(ability* name);
 	void degat(int degats);
-	static Personnage returnPersonnage(int a);
+	static Personnage* returnPersonnage(int a);
 	static int nbPerso();
 	int getVie() { return vie; }
 	int getMana() { return mana; }
 	int getNbAbility() { return listeAbilityPerso.size(); }
 	std::string getPrenom() { return prenom; }
-	ability returnAbility(int a);
+	ability* returnAbility(int a);
 
 private :
 	std::string prenom;
 	int vie;
 	int mana;
-	std::vector<ability> listeAbilityPerso;
+	std::vector<ability*> listeAbilityPerso;
 	static std::vector<Personnage*> ListePersonnageStatic;
 };
 

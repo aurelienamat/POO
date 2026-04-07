@@ -32,8 +32,8 @@ void ability::afficherListeAbility()
 	}
 }
 
-ability ability::returnAbility(int a)
+ability* ability::returnAbility(int a)
 {
-	return *ListeAbilityStatic[a];
+	return ListeAbilityStatic[a];
 }
 

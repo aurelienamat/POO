@@ -11,7 +11,7 @@ public :
 	ability(std::string choix_nom, int choix_degat, int choix_cou);
 	void afficher();
 	static void afficherListeAbility();
-	static ability returnAbility(int a);
+	static ability* returnAbility(int a);
 	int getDegat() { return degat; }
 	int getCout() { return cou; }
 	std::string getNom() { return nom; }

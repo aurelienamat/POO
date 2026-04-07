@@ -11,7 +11,7 @@
 using namespace std;
 
 
-void tourAutre(vector<Personnage> PersonnageArene, string choixPrenom) {
+void tourAutre(vector<Personnage>& PersonnageArene, string choixPrenom) {
     Personnage WhoAttack;
     do {
         WhoAttack = PersonnageArene[rand() % PersonnageArene.size()];
@@ -28,12 +28,12 @@ void tourAutre(vector<Personnage> PersonnageArene, string choixPrenom) {
     cout << " d'attaquer " << WhoToAttack.getPrenom() << endl;
 
     //Avec quelle arme ?
-    WhoToAttack.degat(WhoAttack.returnAbility(rand() % WhoAttack.getNbAbility()).getDegat());
+    WhoToAttack.degat(WhoAttack.returnAbility(rand() % WhoAttack.getNbAbility())->getDegat());
 }
 
-Personnage findPerso(string choixPrenom) {
+Personnage* findPerso(string choixPrenom) {
     for (int i = 0; i < Personnage::nbPerso(); i++) {
-        if (Personnage::returnPersonnage(i).getPrenom() == choixPrenom) {
+        if (Personnage::returnPersonnage(i)->getPrenom() == choixPrenom) {
             return Personnage::returnPersonnage(i);
         }
     }
@@ -42,7 +42,7 @@ Personnage findPerso(string choixPrenom) {
 }
 
 //Fonction qui vérifie si il est toujours en vie
-bool InLive(vector<Personnage> PersonnageArene) {
+bool InLive(vector<Personnage>& PersonnageArene) {
     for (int i = 0; i < PersonnageArene.size(); i++) {
         if (PersonnageArene[i].getVie() <= 0) {
             return 1;
@@ -52,12 +52,12 @@ bool InLive(vector<Personnage> PersonnageArene) {
 }
 
 //Fonction de combat
-void combat(vector<Personnage> PersonnageArene, string choixPrenom) {
-    Personnage aure = findPerso(choixPrenom);
+void combat(vector<Personnage>& PersonnageArene, string choixPrenom) {
+    Personnage aure = *findPerso(choixPrenom);
     //Rejoint l'arène
     //Plus tard un aura une fonctione pour savoir qui va rejoindre l'arène
     for (int i = 0; i < Personnage::nbPerso(); i++) {
-        PersonnageArene.push_back(Personnage::returnPersonnage(i));
+        PersonnageArene.push_back(*Personnage::returnPersonnage(i));
         std::cout << PersonnageArene[i].getPrenom() << " a rejoint l'arene" << endl;
     }
     while (InLive(PersonnageArene) == 0)
@@ -80,7 +80,7 @@ void combat(vector<Personnage> PersonnageArene, string choixPrenom) {
             cin >> choixAttaque;
         } while (choixAttaque > aure.getNbAbility() || choixAttaque < 0);
 
-        PersonnageArene[choixPersoAttaque - 1].degat(aure.returnAbility(choixAttaque - 1).getDegat());
+        PersonnageArene[choixPersoAttaque - 1].degat(aure.returnAbility(choixAttaque - 1)->getDegat());
 
         /*for (int i = 0; i < PersonnageArene.size(); i++) {
             std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
