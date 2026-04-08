@@ -1,4 +1,5 @@
 #include "ability.hpp"
+#include "ui.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -16,13 +17,15 @@ ability::ability(string choix_nom, int choix_degat, int choix_cou) : degat(choix
 }
 
 void ability::afficher() {
-	cout << "Nom : " << nom << " | Degat : " << degat << " | Cout mana : " << cou << endl;
+	cout << BOLD << MAGENTA << nom << RESET
+		 << " | " << RED << "Degats: " << BOLD << degat << RESET
+		 << " | " << BLUE << "Mana: " << BOLD << cou << RESET << "\n";
 }
 
 void ability::afficherListeAbility()
 {
 	for (int i = 0; i < ListeAbilityStatic.size(); i++) {
-		cout << i+1 << ". ";
+		cout << CYAN << "  " << i+1 << ". " << RESET;
 		ListeAbilityStatic[i]->afficher();
 	}
 }

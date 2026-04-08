@@ -7,6 +7,7 @@
 #include <ctime>
 #include "Personnage.hpp"
 #include "ability.hpp"
+#include "ui.hpp"
 
 using namespace std;
 
@@ -19,25 +20,25 @@ void deleteNew() {
     }
 }
 
-void tourAutre(vector<Personnage>& PersonnageArene, string choixPrenom) {
-    Personnage WhoAttack;
+void tourAutre(vector<Personnage*> &PersonnageArene, string choixPrenom) {
+    Personnage* WhoAttack;
     do {
         WhoAttack = PersonnageArene[rand() % PersonnageArene.size()];
-    } while (WhoAttack.getPrenom() == choixPrenom);
+    } while (WhoAttack->getPrenom() == choixPrenom);
 
-    cout << endl << "Au tour de " << WhoAttack.getPrenom();
+    printTitle("TOUR ENEMIE");
 
-    //Qui il attaque ?
-    Personnage WhoToAttack;
+    Personnage* WhoToAttack;
     do {
         WhoToAttack = PersonnageArene[rand() % PersonnageArene.size()];
-    } while (WhoToAttack.getPrenom() == WhoAttack.getPrenom());
+    } while (WhoToAttack->getPrenom() == WhoAttack->getPrenom());
 
-    cout << " d'attaquer " << WhoToAttack.getPrenom() << endl;
+    ability* ab = WhoAttack->returnAbility(rand() % WhoAttack->getNbAbility());
+    cout << YELLOW << "  >> " << BOLD << WhoAttack->getPrenom() << RESET
+         << YELLOW << " utilise " << MAGENTA << BOLD << ab->getNom() << RESET
+         << YELLOW << " sur " << BOLD << WhoToAttack->getPrenom() << RESET << "\n";
 
-    //Avec quelle arme ?
-    WhoToAttack.degat(WhoAttack.returnAbility(rand() % WhoAttack.getNbAbility())->getDegat());
-    cout << endl;
+    WhoToAttack->degat(ab->getDegat());
 }
 
 Personnage* findPerso(string choixPrenom) {
@@ -51,9 +52,9 @@ Personnage* findPerso(string choixPrenom) {
 }
 
 //Fonction qui vérifie si il est toujours en vie
-bool InLive(vector<Personnage>& PersonnageArene) {
+bool InLive(vector<Personnage*> PersonnageArene) {
     for (int i = 0; i < PersonnageArene.size(); i++) {
-        if (PersonnageArene[i].getVie() <= 0) {
+        if (PersonnageArene[i]->getVie() <= 0) {
             return 1;
         }
     }
@@ -61,100 +62,122 @@ bool InLive(vector<Personnage>& PersonnageArene) {
 }
 
 //Fonction de combat
-void combat(vector<Personnage>& PersonnageArene, string choixPrenom) {
-    Personnage aure = *findPerso(choixPrenom);
-    //Rejoint l'arène
-    //Plus tard un aura une fonctione pour savoir qui va rejoindre l'arène
+void combat(vector<Personnage*> &PersonnageArene, string choixPrenom) {
+    Personnage* aure = findPerso(choixPrenom);
+
+    printTitle("ENTREE DANS L'ARENE");
     for (int i = 0; i < Personnage::nbPerso(); i++) {
-        PersonnageArene.push_back(*Personnage::returnPersonnage(i));
-        std::cout << PersonnageArene[i].getPrenom() << " a rejoint l'arene" << endl;
+        PersonnageArene.push_back(Personnage::returnPersonnage(i));
+        cout << GREEN << "  + " << BOLD << PersonnageArene[i]->getPrenom() << RESET << GREEN << " a rejoint l'arene !\n" << RESET;
     }
+
     while (InLive(PersonnageArene) == 0)
     {
-        cout << endl << "Qui veux tu attaquer (1,2...): " << endl;
+        printTitle("VOTRE TOUR");
+
+        cout << YELLOW << "  Cibles disponibles :\n" << RESET;
         for (int i = 0; i < PersonnageArene.size(); i++) {
-            if (PersonnageArene[i].getPrenom() != choixPrenom) {
-                std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
+            if (PersonnageArene[i]->getPrenom() != choixPrenom) {
+                cout << CYAN << "  " << i + 1 << ". " << BOLD << PersonnageArene[i]->getPrenom() << RESET << "  ";
+                printHealthBar(PersonnageArene[i]->getVie());
+                cout << "\n";
             }
         }
 
+        cout << "\n" << WHITE << "  Qui attaquer ? " << RESET;
         int choixPersoAttaque;
         do {
             cin >> choixPersoAttaque;
-        } while (choixPersoAttaque > PersonnageArene.size() || choixPersoAttaque < 1);
-        aure.afficherAbility();
-        cout << "Avec quelle ability :  ";
+        } while (choixPersoAttaque > (int)PersonnageArene.size() || choixPersoAttaque < 1);
+
+        aure->afficherAbility();
+        cout << "\n" << WHITE << "  Quelle ability ? " << RESET;
         int choixAttaque;
         do {
             cin >> choixAttaque;
-        } while (choixAttaque > aure.getNbAbility() || choixAttaque < 0);
+        } while (choixAttaque > aure->getNbAbility() || choixAttaque < 1);
 
-        PersonnageArene[choixPersoAttaque - 1].degat(aure.returnAbility(choixAttaque - 1)->getDegat());
+        ability* ab = aure->returnAbility(choixAttaque - 1);
+        cout << "\n" << CYAN << "  >> " << BOLD << choixPrenom << RESET
+             << CYAN << " utilise " << MAGENTA << BOLD << ab->getNom() << RESET
+             << CYAN << " sur " << BOLD << PersonnageArene[choixPersoAttaque - 1]->getPrenom() << RESET << "\n";
 
-        /*for (int i = 0; i < PersonnageArene.size(); i++) {
-            std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
-        }*/
+        PersonnageArene[choixPersoAttaque - 1]->degat(ab->getDegat());
 
-        //Au tour des autres
-        //Qui va jouer ?
+        printSeparator('-');
         tourAutre(PersonnageArene, choixPrenom);
-
+        printSeparator('-');
     }
-    cout << endl <<"Fin du combat ! Voici les derniers en vie " << endl;
+
+    printTitle("FIN DU COMBAT");
+    /*cout << GREEN << BOLD << "  Survivants :\n" << RESET;
     for (int i = 0; i < PersonnageArene.size(); i++) {
-        if (PersonnageArene[i].getVie() > 0) {
-            std::cout << i + 1 << ". " << PersonnageArene[i].getPrenom() << " | vie " << PersonnageArene[i].getVie() << endl;
+        if (PersonnageArene[i]->getVie() > 0) {
+            cout << "  " << CYAN << BOLD << PersonnageArene[i]->getPrenom() << RESET << "  ";
+            printHealthBar(PersonnageArene[i]->getVie());
+            cout << "\n";
         }
     }
+    cout << "\n";*/
 }
 
 int main()
 {
+    enableANSI();
     srand(time(0));
-    
-    //Création des ability
-    vector<ability*> listeAbility;
-    new ability("soinI", -10, 10);
+
+    printBanner();
+
+    // Création des abilities
+    new ability("SoinI", -10, 10);
     new ability("Morsure", 15, 0);
     new ability("Boule de feu", 10, 20);
 
-    //Création des personnages
-    Personnage goliath("goliath"), david("david");
+    // Création des PNJ
+    Personnage goliath("Goliath"), david("David");
 
+    printTitle("CREATION DE VOTRE PERSONNAGE");
+    cout << WHITE << "  Votre nom : " << RESET;
     string choixPrenom;
-    std::cout << "Votre nom : ";
     cin >> choixPrenom;
 
     Personnage aure(choixPrenom);
-    std::cout << "Votre perso a ete cree, voici ses infos : " << endl;
+    cout << "\n";
+    printSeparator('-');
     aure.afficher();
     aure.afficherAbility();
+    printSeparator('-');
 
-    getchar();
-    getchar();
+    cout << "\n" << WHITE << "  Appuyez sur Entree pour continuer..." << RESET;
+    getchar(); getchar();
 
-    //Choisie une ability
-    std::cout << "Voici toutes les ability : " << endl;
+    printTitle("CHOISIR UNE ABILITY");
     ability::afficherListeAbility();
+    cout << "\n" << WHITE << "  Votre choix : " << RESET;
     int choixNomAbility;
-    std::cout << "Entrez le numero de l'abilite que vous voulez choisir : " ;
     do {
         cin >> choixNomAbility;
-    } while (choixNomAbility > ability::getListeAbility().size() || choixNomAbility < 1);
+    } while (choixNomAbility > (int)ability::getListeAbility().size() || choixNomAbility < 1);
 
-    aure.addAbility(ability::returnAbility(choixNomAbility-1));
-
+    aure.addAbility(ability::returnAbility(choixNomAbility - 1));
+    cout << "\n";
     aure.afficherAbility();
 
-    //Debut du combat
-    std::cout << "Debut du combat, etes vous pret ? " << endl;
+    cout << "\n" << YELLOW << BOLD << "  Pret pour le combat ? Appuyez sur Entree..." << RESET;
+    getchar(); getchar();
 
-    getchar();
-    getchar();
-    
-    vector<Personnage> PersonnageArene;
-
+    vector<Personnage*> PersonnageArene;
     combat(PersonnageArene, choixPrenom);
+
+    cout << GREEN << BOLD << "  Survivants :\n" << RESET;
+    for (int i = 0; i < PersonnageArene.size(); i++) {
+        if (PersonnageArene[i]->getVie() > 0) {
+            cout << "  " << CYAN << BOLD << PersonnageArene[i]->getPrenom() << RESET << "  ";
+            printHealthBar(PersonnageArene[i]->getVie());
+            cout << "\n";
+        }
+    }
+    cout << "\n";
 
     deleteNew();
     //Ajout de tous les personnage dans l'arene

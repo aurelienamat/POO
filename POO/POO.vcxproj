@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="ability.hpp" />
     <ClInclude Include="Personnage.hpp" />
+    <ClInclude Include="ui.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

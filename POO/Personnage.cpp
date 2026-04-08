@@ -1,4 +1,5 @@
 #include "Personnage.hpp"
+#include "ui.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -24,18 +25,18 @@ Personnage::Personnage(string choixPrenom):vie(100),mana(50),prenom(choixPrenom)
 }
 
 void Personnage::afficher() {
-	cout << "Info personnage : " << endl;
-	cout << "Prenom : " << prenom << endl;
-	cout << "vie : " << vie << endl;
-	cout << "mana : " << mana << endl;
-	
+	cout << CYAN << BOLD << "  " << prenom << RESET << "\n";
+	cout << "  " << RED << "Vie  : " << RESET;
+	printHealthBar(vie);
+	cout << "\n";
+	cout << "  " << BLUE << "Mana : " << BOLD << mana << RESET << "\n";
 }
 
 void Personnage::afficherAbility()
 {
-	cout << "Voici toute les ability de votre personnage : " << endl;
+	cout << YELLOW << "  Abilities de " << BOLD << prenom << RESET << YELLOW << " :" << RESET << "\n";
 	for (int i = 0; i < listeAbilityPerso.size(); i++) {
-		std::cout << i + 1 << ". ";
+		cout << CYAN << "  " << i + 1 << ". " << RESET;
 		listeAbilityPerso[i]->afficher();
 	}
 }
@@ -47,9 +48,14 @@ void Personnage::addAbility(ability* name)
 
 void Personnage::degat(int degats)
 {
-	std::cout << this->prenom << " | vie " << this->vie << " -> ";
 	this->vie -= degats;
-	std::cout << this->vie << endl;
+	if (degats < 0) {
+		cout << GREEN << "  [SOIN] " << BOLD << prenom << RESET << GREEN << " recupere " << -degats << " PV  " << RESET;
+	} else {
+		cout << RED << "  [DEGAT] " << BOLD << prenom << RESET << RED << " subit " << degats << "  " << RESET;
+	}
+	printHealthBar(this->vie);
+	cout << "\n";
 }
 
 Personnage *Personnage::returnPersonnage(int a)
