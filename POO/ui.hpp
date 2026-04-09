@@ -31,8 +31,7 @@ inline void printSeparator(char c = '=', int len = 52) {
 inline void printTitle(const std::string& titre) {
     std::cout << "\n";
     printSeparator();
-    std::cout << CYAN << "  " <
-        < BOLD << WHITE << titre << RESET << "\n";
+    std::cout << CYAN << "  " << BOLD << WHITE << titre << RESET << "\n";
     printSeparator();
 }
 
